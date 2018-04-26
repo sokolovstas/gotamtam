@@ -1,0 +1,84 @@
+package gotamtam
+
+const (
+	PING         = 0x01
+	LOG          = 0x05
+	SESSION_INIT = 0x06
+
+	PROFILE      = 0x10
+	AUTH_REQUEST = 0x11
+	AUTH         = 0x12
+	LOGIN        = 0x13
+	LOGOUT       = 0x14
+	SYNC         = 0x15
+
+	CONFIG       = 0x16
+	AUTH_CONFIRM = 0x17
+
+	ASSETS_GET        = 0x1A
+	ASSETS_UPDATE     = 0x1B
+	ASSETS_GET_BY_IDS = 0x1C
+
+	CONTACT_INFO         = 0x20
+	CONTACT_UPDATE       = 0x22
+	CONTACT_PRESENCE     = 0x23
+	CONTACT_LIST         = 0x24
+	CONTACT_PHOTOS       = 0x27
+	CONTACT_CREATE       = 0x29
+	REMOVE_CONTACT_PHOTO = 0x2B
+
+	CHAT_INFO       = 0x30
+	CHAT_HISTORY    = 0x31
+	CHAT_MARK       = 0x32
+	CHAT_MEDIA      = 0x33
+	CHAT_DELETE     = 0x34
+	CHAT_LIST       = 0x35
+	CHAT_CLEAR      = 0x36
+	CHAT_UPDATE     = 0x37
+	CHAT_CHECK_LINK = 0x38
+	CHAT_JOIN       = 0x39
+	CHAT_LEAVE      = 0x3A
+	CHAT_MEMBERS    = 0x3B
+	CHANNEL_SEARCH  = 0x3c
+
+	MSG_SEND          = 0x40
+	MSG_TYPING        = 0x41
+	MSG_DELETE        = 0x42
+	MSG_EDIT          = 0x43
+	CHAT_SEARCH       = 0x44
+	MSG_SHARE_PREVIEW = 0x46
+	MSG_SEARCH_TOUCH  = 0x48
+	MSG_SEARCH        = 0x49
+	MSG_GET_STAT      = 0x4A
+	MSG_GET           = 0x47
+
+	VIDEO_CHAT_START   = 0x4C
+	VIDEO_CHAT_COMMAND = 0x4E
+
+	CHAT_MEMBERS_UPDATE = 0x4d
+
+	PHOTO_UPLOAD  = 0x50
+	VIDEO_UPLOAD  = 0x52
+	VIDEO_PLAY    = 0x53
+	FILE_UPLOAD   = 0x57
+	FILE_DOWNLOAD = 0x58
+
+	CHAT_PIN_SET_VISIBILITY = 0x56
+	LINK_INFO               = 0x59
+	MESSAGE_LINK            = 0x5a
+
+	PHONE_BIND_REQUEST = 0x62
+	PHONE_BIND_CONFIRM = 0x63
+
+	// Оповещения TAMTAM-сервера
+	NOTIF_MESSAGE            = 0x80
+	NOTIF_TYPING             = 0x81
+	NOTIF_MARK               = 0x82
+	NOTIF_CONTACT            = 0x83
+	NOTIF_PRESENCE           = 0x84
+	NOTIF_CONFIG             = 0x86
+	NOTIF_CHAT               = 0x87
+	NOTIF_ATTACH             = 0x88
+	NOTIF_VIDEO_CHAT_START   = 0x89
+	NOTIF_VIDEO_CHAT_COMMAND = 0x8
+)
