@@ -1,5 +1,7 @@
 # GoTamTam
-TamTam Golang API
+## TamTam Golang API
+
+Это первое приближение накиданое за несколько часов
 
 ```
 func main() {
