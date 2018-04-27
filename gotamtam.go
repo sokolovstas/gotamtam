@@ -3,7 +3,6 @@ package gotamtam
 import (
 	"crypto/tls"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"net/url"
@@ -22,6 +21,7 @@ type Client struct {
 	Version    string
 	Name       string
 	Seq        int
+	Debug      bool
 }
 
 // GoTamTamReader interface for reader
@@ -47,6 +47,7 @@ func New(token, version, name string) (*Client, error) {
 	tamtam.Version = version
 	tamtam.Name = name
 	tamtam.Seq = 1
+	tamtam.Debug = true
 
 	return tamtam, nil
 }
@@ -54,11 +55,14 @@ func New(token, version, name string) (*Client, error) {
 func (c *Client) Serve(reader Reader) {
 	go func() {
 		for {
-			_, bytes, err := c.Connection.ReadMessage()
+			_, b, err := c.Connection.ReadMessage()
 			if err != nil {
 				log.Println("Read error:", err)
 			}
-			message, err := DecomposeMessage(bytes)
+			if c.Debug {
+				log.Println(string(b))
+			}
+			message, err := DecomposeMessage(b)
 			if err != nil {
 				log.Println("Decompose error:", err)
 			}
@@ -133,7 +137,9 @@ func (c *Client) Write(opCode int, payload interface{}) {
 		log.Println("Compose error:", err)
 		return
 	}
-	fmt.Println(string(b))
+	if c.Debug {
+		log.Println(string(b))
+	}
 	err = c.Connection.WriteMessage(websocket.TextMessage, b)
 	if err != nil {
 		log.Println("Write error:", err)
