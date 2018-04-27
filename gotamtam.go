@@ -16,7 +16,7 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-type GoTamTamClient struct {
+type Client struct {
 	Connection *websocket.Conn
 	Token      string
 	Version    string
@@ -24,9 +24,14 @@ type GoTamTamClient struct {
 	Seq        int
 }
 
+// GoTamTamReader interface for reader
+type Reader interface {
+	Response(client *Client, message *Message)
+}
+
 // Create NEW client
-func New(token, version, name string) (*GoTamTamClient, error) {
-	tamtam := &GoTamTamClient{}
+func New(token, version, name string) (*Client, error) {
+	tamtam := &Client{}
 	u := url.URL{Scheme: "wss", Host: "tamtam-ws.ok.ru", Path: "/websocket"}
 
 	d := websocket.Dialer{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}
@@ -46,7 +51,21 @@ func New(token, version, name string) (*GoTamTamClient, error) {
 	return tamtam, nil
 }
 
-func (c *GoTamTamClient) Serve() {
+func (c *Client) Serve(reader Reader) {
+	go func() {
+		for {
+			_, bytes, err := c.Connection.ReadMessage()
+			if err != nil {
+				log.Println("Read error:", err)
+			}
+			message, err := DecomposeMessage(bytes)
+			if err != nil {
+				log.Println("Decompose error:", err)
+			}
+			reader.Response(c, message)
+		}
+	}()
+
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
 
@@ -94,7 +113,7 @@ func (c *GoTamTamClient) Serve() {
 	}
 }
 
-func (c *GoTamTamClient) SendMessage(chatID int, chatType, text string) {
+func (c *Client) SendMessage(chatID int, chatType, text string) {
 	message := SendMessagePayload{
 		ChatID: chatID,
 		Message: SendMessage{
@@ -108,7 +127,7 @@ func (c *GoTamTamClient) SendMessage(chatID int, chatType, text string) {
 	c.Write(MSG_SEND, message)
 }
 
-func (c *GoTamTamClient) Write(opCode int, payload interface{}) {
+func (c *Client) Write(opCode int, payload interface{}) {
 	b, err := ComposeMessage(c.Seq, opCode, payload)
 	if err != nil {
 		log.Println("Compose error:", err)
@@ -126,7 +145,7 @@ func (c *GoTamTamClient) Write(opCode int, payload interface{}) {
 // ComposeMessage compose json byte message
 func ComposeMessage(seq int, opCode int, payload interface{}) ([]byte, error) {
 	b, err := json.Marshal(
-		Wrapper{
+		Message{
 			Ver:     10,
 			Cmd:     0,
 			Seq:     seq,
@@ -137,8 +156,8 @@ func ComposeMessage(seq int, opCode int, payload interface{}) ([]byte, error) {
 	return b, err
 }
 
-func DecomposeMessage(data []byte) (*Wrapper, error) {
-	r := &Wrapper{}
+func DecomposeMessage(data []byte) (*Message, error) {
+	r := &Message{}
 	err := json.Unmarshal(data, r)
 	if err != nil {
 		return nil, err

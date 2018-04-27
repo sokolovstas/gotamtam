@@ -1,6 +1,6 @@
 package gotamtam
 
-type Wrapper struct {
+type Message struct {
 	Ver      int         `json:"ver"`
 	Cmd      int         `json:"cmd"`
 	Seq      int         `json:"seq"`
