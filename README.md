@@ -1,17 +1,35 @@
-# gotamtam
-mail.ru TamTam Golang API
+# GoTamTam
+TamTam Golang API
 
 ```
-b, err := gotamtam.ComposeMessage(seq, opCode, payload)
-if err != nil {
-  log.Println("Compose error:", err)
-  return
+func main() {
+	tamtam, err := gotamtam.New(TOKEN, "0.1.0", "TestBOT")
+	if err != nil {
+		log.Fatal("Connection error:", err)
+	}
+	tamtam.Serve(NewGiphyBot())
 }
-fmt.Println(string(b))
-err = c.WriteMessage(websocket.TextMessage, b)
-if err != nil {
-  log.Println("Write error:", err)
-  return
+
+type GiphyBot struct {
+	giphy *libgiphy.Giphy
 }
-seq++
+
+func NewGiphyBot() *GiphyBot {
+	b := &GiphyBot{}
+	b.giphy = libgiphy.NewGiphy("")
+	return b
+}
+
+func (b *GiphyBot) Response(client *gotamtam.Client, message *gotamtam.Message) {
+	switch message.OpCode {
+	case gotamtam.NOTIF_MESSAGE:
+		m := message.Payload.(gotamtam.NotifyMessagePayload)
+
+		dataTranslate, err := b.giphy.GetTranslate(m.Message.Text, "", "", false)
+		if err == nil && dataTranslate != nil {
+			client.SendMessage(m.ChatID, m.Type, dataTranslate.Data.Images.Downsized.Url)
+		}
+	}
+}
+
 ```
